@@ -22,16 +22,16 @@
 ### Step 1: Đọc ảnh đầu vào 👇:
 
 -   Ở bước này các bạn sẽ dùng opencv như đã học ở trên lớp nha
--   Phần này nhóm mình sẽ phát triển để đọc cả photo và video nha. Good luck
+-   Phần này nhóm mình sẽ phát triển để đọc cả photo và video nha. Good luck 🍀
 
 ### Step 2: Tiền xử lý ảnh 👇:
 
-    Ở bước này sẽ có tiến trình như sau:
+-   Ở bước này sẽ có tiến trình như sau:
 
--   Chuyển ảnh sang ảnh xám
--   Loại bỏ nhiễu(sử dụng bộ lọc Gaussian): như nhiễu tivi
--   Tăng cường độ tương phản
--   Nhị phân hóa ảnh để tách biệt văn bản khỏi nền
+*   Chuyển ảnh sang ảnh xám
+*   Loại bỏ nhiễu(sử dụng bộ lọc Gaussian): như nhiễu tivi
+*   Tăng cường độ tương phản
+*   Nhị phân hóa ảnh để tách biệt văn bản khỏi nền
 
 ### Step 3: Nhận dạng ký tự quang học(OCR) 👇:
 

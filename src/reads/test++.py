@@ -35,7 +35,7 @@ class VideoOCR:
                 
             time.sleep(0.1)
             
-    def contours(self) -> None:
+    def contours_thread(self) -> None:
         while self.running:
             if not self.frame_queue.empty():
                 frame = self.frame_queue.get()
@@ -56,7 +56,7 @@ class VideoOCR:
             time.sleep(0.1)
 
     def run(self, name: str) -> None:
-        contours_thread = threading.Thread(target=self.contours)
+        contours_thread = threading.Thread(target=self.contours_thread)
         ocr_thread = threading.Thread(target=self.ocr_thread)
         contours_thread.start()
         ocr_thread.start()

@@ -1,3 +1,4 @@
+import hashlib
 import easyocr as eo
 import cv2 as cv
 import cv2_ext
@@ -43,23 +44,26 @@ class VideoOCR:
         gaussian = cv.GaussianBlur(gray, (3, 3), 0)
         _, threshold = cv.threshold(
             gaussian, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
-        # laplacian = cv.Laplacian(gray, cv.CV_32F, ksize=3)
-        # laplacian = cv.convertScaleAbs(laplacian)
+
         contours, _ = cv.findContours(
             threshold, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
         if contours:
             max_contour = max(contours, key=cv.contourArea)
             x, y, w, h = cv.boundingRect(max_contour)
-            cropped_img = frame[y:y+h, x:x+w]
+            cropped_img = frame[y:y + h, x:x + w]
             return [cropped_img, x, y, w, h]
 
         return [None, None, None, None, None]
+
+    def image_hash(self, image: np.ndarray) -> str:
+        return hashlib.md5(image.tobytes()).hexdigest()
 
     def run(self, name: str) -> None:
         ocr_thread = threading.Thread(target=self.ocr_thread)
         ocr_thread.start()
         line_step = 20
         x_prev, y_prev, w_prev, h_prev = 0, 0, 0, 0
+        hash_prev = ""
 
         try:
             while True:
@@ -69,15 +73,13 @@ class VideoOCR:
                     break
 
                 if not self.frame_queue.full():
-                    frame_processed, x, y, w, h = self.contours_process(
-                        frame.copy())
-                    cv.imshow("Cropped", cv.resize(
-                        frame_processed, (300, 300)))
-                    print(f"x: {x}, y: {y}, w: {w}, h: {h}")
-                    if x is not None and y is not None and w is not None and h is not None:
-                        if x != x_prev and y != y_prev and w != w_prev and h != h_prev:
-                            self.frame_queue.put(frame_processed)
-                            x_prev, y_prev, w_prev, h_prev = x, y, w, h
+                    frame_processed, x, y, w, h = self.contours_process(frame.copy())
+                    cv.imshow("Cropped", frame_processed)
+                    hash_current = self.image_hash(frame_processed)
+                    if x != x_prev or y != y_prev or w != w_prev or h != h_prev or hash_current != hash_prev:
+                        self.frame_queue.put(frame_processed)
+                        x_prev, y_prev, w_prev, h_prev = x, y, w, h
+                        hash_prev = hash_current
 
                 if self.current_results:
                     line_start = (200, 200)
